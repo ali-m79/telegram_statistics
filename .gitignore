@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 # custome gitignore
 .vscode
+*.ipynb
+*.json
+*.png
