@@ -35,6 +35,7 @@ class ChatStatistic():
         output_dir: Union[str, Path],
         width: int = 800, height: int = 600,
         max_font_size: int = 250,
+        background_color: str = "white",
     ):
         """Generate a Word Cloud From Chat Data
         Args:
@@ -58,7 +59,7 @@ class ChatStatistic():
         # generate final word cloud
         logger.info("Generating word cloud")
         wordcloud = WordCloud(
-            background_color="white",
+            background_color=background_color,
             height=height, width=width,
             max_font_size=max_font_size,
             font_path=str(DATA_DIR / "./Vazir.ttf"),
