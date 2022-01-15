@@ -2,9 +2,7 @@ import json
 from pathlib import Path
 from typing import Union
 
-import arabic_reshaper
-# from bidi.algorithm import get_display
-from hazm import Normalizer, word_tokenize
+from hazm import Normalizer
 from loguru import logger
 from src.data import DATA_DIR
 from wordcloud import WordCloud
@@ -25,7 +23,7 @@ class ChatStatistic():
         self.normalizer = Normalizer()
 
         # load stopwords
-        logger.info(f"loadinf stop words from {DATA_DIR/'stopwords.txt'}")
+        logger.info(f"loadinf stopwords from {DATA_DIR/'stopwords.txt'}")
         stopwords = open(DATA_DIR / "stopwords.txt").readlines()
         stopwords = list(map(str.strip, stopwords))
         self.stopwords = list(map(self.normalizer.normalize, stopwords))
@@ -47,14 +45,16 @@ class ChatStatistic():
         text_content = ""
         for msg in self.chat_data["messages"]:
             if type(msg["text"]) is str:
-                tokens = word_tokenize(msg["text"])
-                tokens = list(filter(lambda x: x not in self.stopwords, tokens))
-                text_content += f"{' '.join(tokens)} "
+                text_content += msg["text"]
+            else:
+                for sub_msg in msg["text"]:
+                    if isinstance(sub_msg, str):
+                        text_content += sub_msg
+                    elif "text" in sub_msg:
+                        text_content += sub_msg["text"]
 
-        # Normalize and reshape for final word cloud
+        # Normalize for final word cloud
         text_content = self.normalizer.normalize(text_content)
-        text_content = arabic_reshaper.reshape(text_content)
-        # text_content = get_display(text_content)
 
         # generate final word cloud
         logger.info("Generating word cloud")
@@ -62,7 +62,8 @@ class ChatStatistic():
             background_color=background_color,
             height=height, width=width,
             max_font_size=max_font_size,
-            font_path=str(DATA_DIR / "./Vazir.ttf"),
+            font_path=str(DATA_DIR / "./Vazir-Code.ttf"),
+            stopwords=self.stopwords,
             ).generate(text_content)
 
         # Save word cloud in png format
@@ -71,6 +72,6 @@ class ChatStatistic():
 
 
 if __name__ == "__main__":
-    chat_stat = ChatStatistic(chat_json=DATA_DIR / "markaz.json")
+    chat_stat = ChatStatistic(chat_json=DATA_DIR / "result.json")
     chat_stat.generate_word_cloud(output_dir=DATA_DIR)
     print("done!")
