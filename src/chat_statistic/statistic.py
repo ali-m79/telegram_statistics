@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Union
 
@@ -6,6 +5,7 @@ from hazm import Normalizer
 from loguru import logger
 from src.data import DATA_DIR
 from wordcloud import WordCloud
+from src.utils.io import read_file, read_json
 
 
 class ChatStatistic():
@@ -18,13 +18,12 @@ class ChatStatistic():
         """
         # load json data
         logger.info(f"loading chat data from {chat_json}")
-        with open(chat_json) as f:
-            self.chat_data = json.load(f)
+        self.chat_data = read_json(chat_json)
         self.normalizer = Normalizer()
 
         # load stopwords
         logger.info(f"loadinf stopwords from {DATA_DIR/'stopwords.txt'}")
-        stopwords = open(DATA_DIR / "stopwords.txt").readlines()
+        stopwords = read_file(DATA_DIR / "stopwords.txt")
         stopwords = list(map(str.strip, stopwords))
         self.stopwords = list(map(self.normalizer.normalize, stopwords))
 
