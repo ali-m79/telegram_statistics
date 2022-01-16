@@ -23,8 +23,7 @@ class ChatStatistic():
 
         # load stopwords
         logger.info(f"loadinf stopwords from {DATA_DIR/'stopwords.txt'}")
-        stopwords = read_file(DATA_DIR / "stopwords.txt")
-        stopwords = list(map(str.strip, stopwords))
+        stopwords = read_file(DATA_DIR / "stopwords.txt").split("\n")
         self.stopwords = list(map(self.normalizer.normalize, stopwords))
 
     def generate_word_cloud(
@@ -71,6 +70,6 @@ class ChatStatistic():
 
 
 if __name__ == "__main__":
-    chat_stat = ChatStatistic(chat_json=DATA_DIR / "result.json")
+    chat_stat = ChatStatistic(chat_json=DATA_DIR / "stack.json")
     chat_stat.generate_word_cloud(output_dir=DATA_DIR)
     print("done!")
